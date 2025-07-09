@@ -1,0 +1,5 @@
+Required Secrets
+
+ha_db_root_password
+ha_db_password
+ha_db_user

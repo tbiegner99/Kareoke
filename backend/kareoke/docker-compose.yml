@@ -1,0 +1,32 @@
+version: '3'
+networks:
+  kareoke_local:
+    external: true
+secrets:
+    ha_db_user:
+        file: $KAREOKE_HOME/secrets/ha_db_user.txt
+    ha_db_password:
+        file: $KAREOKE_HOME/secrets/ha_db_password.txt
+services:
+  'kareoke':
+    build: $KAREOKE_HOME/backend
+    environment:
+      - LOCAL=true
+      - BASE_URL=localhost
+      - DEBUGGER_ARGS=--continue
+      - DB_HOST=kareoke-db
+      - DB_PORT=5432
+      - DB_SCHEMA=kareoke
+      - DB_PASSWORD_FILE=/run/secrets/ha_db_password
+      - DB_USER_FILE=/run/secrets/ha_db_user
+    container_name: kareoke
+    networks:
+      - kareoke_local
+    secrets:
+      - ha_db_user
+      - ha_db_password
+    ports:
+      - '8080:8080'
+      - '40000:40000'
+    volumes:
+      - '$KAREOKE_HOME/backend/kareoke:/srv/package'

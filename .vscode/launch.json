@@ -1,0 +1,38 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+
+  
+    {
+      "name": "kareoke",
+      "type": "node",
+      "request": "attach",
+      "cwd": "${workspaceFolder}/backend/kareoke",
+      "address": "127.0.0.1",
+      "port": 40000,
+      "skipFiles": [
+        "<node_internals>/**",
+        "node_modules/**"
+      ],
+      "remoteRoot": "/srv/package"
+      
+    },
+    {
+      "name": "kareoke-node",
+      "type": "node",
+      "request": "attach",
+      "cwd": "${workspaceRoot}/backend/kareoke",
+      "localRoot": "${workspaceRoot}/backend/kareoke",
+      "remoteRoot": "/srv/package",
+      "smartStep": true,
+      "sourceMaps": true,
+     
+      "port": 40000,
+    
+    }
+
+  ]
+}

@@ -1,0 +1,12 @@
+FROM golang:1.19-alpine
+
+RUN apk add nodejs
+RUN apk add npm
+RUN npm i -g nodemon
+RUN apk add build-base
+RUN apk add --no-cache git
+RUN go install github.com/go-delve/delve/cmd/dlv@latest
+
+ENV DEBUGGER_ARGS=
+WORKDIR /srv/package
+CMD go clean -modcache && cd cmd && go install && cd .. && pwd && nodemon --watch './**/*.go' -e "go" --signal SIGTERM --exec "go build -gcflags='all=-N -l' -o ./bin/app ./cmd/*.go &&  dlv --listen=:40000 --headless=true --api-version=2 $DEBUGGER_ARGS --accept-multiclient exec ./bin/app || exit 1" 

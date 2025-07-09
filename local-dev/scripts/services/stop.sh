@@ -1,0 +1,1 @@
+$KAREOKE_HOME/local-dev/scripts/services/service-command.sh stop $@

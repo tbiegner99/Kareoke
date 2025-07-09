@@ -1,0 +1,13 @@
+{
+  "name": "@tbiegner99/kareoke",
+  "version": "0.0.1",
+  "description": "Kareoke System",
+  "bin": {
+    "kareoke": "./scripts/kareoke.sh"
+  },
+  "scripts": {
+    "preinstall": "./scripts/setup/install.sh"
+  },
+  "author": "",
+  "license": "ISC"
+}

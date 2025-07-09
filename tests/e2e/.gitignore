@@ -1,0 +1,12 @@
+node_modules
+log
+results
+video
+screenshots
+npm_install_debug.log
+videos
+output
+reports
+/test-results/
+/playwright-report/
+/playwright/.cache/

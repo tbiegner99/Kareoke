@@ -1,0 +1,2 @@
+#! /bin/bash
+docker run -v $KAREOKE_HOME/database/kareoke:/liquibase/lib --network=kareoke_local liquibase/liquibase liquibase update  --username=kareoke --password=kareoke --url=jdbc:postgresql://kareoke-db:5432/kareoke --changelogFile=changelog-root.xml

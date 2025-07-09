@@ -1,0 +1,24 @@
+version: "3.3"
+networks:
+  kareoke_local:
+    external: true
+services:
+  rtsp_server:
+    build: $KAREOKE_HOME/backend/rtsp/RTPServer
+    restart: always
+    container_name: rtsp
+    volumes:
+      - "/Volumes/kareoke:/mnt/kareoke"
+    environment:
+      VIDEO_PATH: '/mnt/kareoke/video'
+      KAREOKE_PATH: '/mnt/kareoke/Songs'
+      HTTP_PORT: '8001'
+      RTSP_PORT: '4586'
+      RTP_LOGGING: 'false'
+      PLAYLIST_SERVER_URL: 'http://kareoke:8080'
+      PLACEHOLDER_VIDEO: '/mnt/kareoke/placeholder/discoball10.mp4'
+    networks:
+      - kareoke_local
+    ports:
+      - 4586:4586
+      - 8001:8001

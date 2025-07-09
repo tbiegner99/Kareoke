@@ -1,0 +1,7 @@
+FROM node:20
+RUN npm i -g nodemon
+RUN npm i -g ts-node-dev
+
+ENV DEBUGGER_ARGS=
+WORKDIR /srv/package
+CMD nodemon --watch './**/*.ts' -e "ts" --signal SIGTERM --exec "ts-node-dev --inspect=0.0.0.0:40000  ./src/app.ts || exit 1" 
