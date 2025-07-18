@@ -37,6 +37,46 @@ fi
     echo "Creating 'kareoke_files' volume with path: $FILES_PATH"
     docker volume create --opt type=none --opt o=bind --opt device=$FILES_PATH kareoke_files
  
+ while getopts "s" opt; do
+  case "$opt" in
+    h|\?)
+      echo "s - force secret overwrite. i f not provided secrets will be prompted if they dont exist"
+      exit 0
+      ;;
+    s) OVERWRITE="true"
+      ;;
+
+  esac
+done 
+
+readRequired() {
+    while true; do
+        echo $1
+        read $2
+        if [[ ${!2} =~ ^.+$ ]]; then
+            break;
+        elif [[ -z "${!2}" && -n "$3" ]]; then 
+            printf -v $2 "$3" 
+            break;
+        else 
+            echo 'This is required'
+        fi
+    done
+}
+DIR="${KAREOKE_HOME}/secrets"
+if [ ! -f "${DIR}/ha_db_user.txt" ]; then
+    echo "Creating secrets"
+    if [[ "$FORCE_OVERWRITE" == "true" || ! -f "${DIR}/ha_db_user.txt" ]]; then
+        readRequired "Enter database user" MYSQL_USER
+        echo -n $MYSQL_USER> "${DIR}/ha_db_user.txt"
+    fi
+    if [[ "$FORCE_OVERWRITE" == "true" || ! -f "${DIR}/ha_db_password.txt" ]]; then
+        readRequired "Enter database users password" MYSQL_PASSWORD
+        echo -n $MYSQL_PASSWORD > "${DIR}/ha_db_password.txt"
+
+    fi
+fi
+
 
 echo "Creating network"
 EXISTING_NETWORK=$(docker network ls | grep kareoke_prod)
