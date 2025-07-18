@@ -1,7 +1,9 @@
 FROM node:24 as build
 WORKDIR /srv/package
-COPY ./ui/kareoke /srv/package
+COPY ./ui/kareoke/package-lock.json /srv/package/package-lock.json
+COPY ./ui/kareoke/package.json /srv/package/package.json
 RUN npm ci
+COPY ./ui/kareoke /srv/package
 RUN npm run build
 
 FROM nginx:latest
