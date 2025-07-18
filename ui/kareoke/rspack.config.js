@@ -24,11 +24,15 @@ const getEnvironmentVariables = () => {
 
 module.exports = defineConfig({
   context: __dirname,
+  
   entry: {
     main: './src/index.tsx',
+    
+    
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
+  
     alias: {
       '@': require('path').resolve(__dirname, 'src'),
       context: require('path').resolve(__dirname, 'src/context'),
@@ -102,7 +106,8 @@ module.exports = defineConfig({
     new HtmlRspackPlugin({
       template: './public/index.html',
       filename: 'index.html',
-      publicPath: '/',
+      publicPath: '/kareoke/app/',
+      favicon: 'public/favicon.svg',
       inject: 'body',
     }),
     new DefinePlugin({
