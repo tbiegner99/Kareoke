@@ -4,7 +4,7 @@ import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 // import { Mic } from '@mui/icons-material';
 import styles from './Header.module.css';
 import PlaylistDrawer from '../../components/PlaylistDrawer';
-
+import { Urls } from '../../../utils/Urls';
 const Header: React.FC = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Header: React.FC = () => {
             }
             sx={{ ml: 1, pl: 1, pr: 2, textTransform: 'none', fontWeight: 600 }}
             aria-label='karaoke'
-            onClick={() => navigate('/')}
+            onClick={() => navigate(Urls.home)}
           >
             <Typography variant='h6' component='div' sx={{ ml: 1 }}>
               Karaoke

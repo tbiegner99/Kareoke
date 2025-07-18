@@ -6,6 +6,7 @@ import styles from './Home.module.css';
 import { useNavigate } from 'react-router-dom';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
+import { Urls } from '../../../utils/Urls';
 
 const JoinRoomButton: React.FC = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const JoinRoomButton: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (/^\d+$/.test(roomId)) {
-      navigate(`/room/${roomId}/songs`);
+      navigate(Urls.songs(roomId));
       handleClose();
     } else {
       setError('Please enter a valid Room ID.');
@@ -121,7 +122,7 @@ const Home: React.FC = () => {
             variant='contained'
             size='large'
             component={Link}
-            to={`/room/${Math.floor(10000 + Math.random() * 90000)}`}
+            to={Urls.room(`${Math.floor(10000 + Math.random() * 90000)}`)}
             startIcon={<MusicNote />}
             sx={{ minWidth: 160 }}
           >
