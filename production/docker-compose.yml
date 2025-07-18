@@ -28,7 +28,6 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/templates:/etc/nginx/templates
-      - ../ui/kareoke/dist:/etc/nginx/html
       - kareoke_files:/mnt/kareoke
   kareoke-prod-db:
     image: postgres
