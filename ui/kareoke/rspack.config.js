@@ -29,6 +29,15 @@ module.exports = defineConfig({
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    alias: {
+      '@': require('path').resolve(__dirname, 'src'),
+      context: require('path').resolve(__dirname, 'src/context'),
+      models: require('path').resolve(__dirname, 'src/models'),
+      domains: require('path').resolve(__dirname, 'src/domains'),
+      ui: require('path').resolve(__dirname, 'src/ui'),
+      utils: require('path').resolve(__dirname, 'src/utils'),
+      config: require('path').resolve(__dirname, 'src/config'),
+    },
   },
   module: {
     rules: [
@@ -93,9 +102,12 @@ module.exports = defineConfig({
     new HtmlRspackPlugin({
       template: './public/index.html',
       filename: 'index.html',
+      publicPath: '/',
       inject: 'body',
     }),
     new DefinePlugin({
+      'process.env.VIDEO_SERVER_URL':
+        process.env.VIDEO_SERVER_URL ?? 'http://localhost/',
       'process.env.BASE_URL': process.env.BASE_URL
         ? JSON.stringify(process.env.BASE_URL)
         : JSON.stringify(''),
@@ -121,6 +133,17 @@ module.exports = defineConfig({
     historyApiFallback: true,
     compress: true,
     proxy: {
+      '/kareoke/video': {
+        target: process.env.VIDEO_SERVER_URL || 'http://localhost',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/socket.io': {
+        target: process.env.REACT_APP_PROXY_TARGET || 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
       '/api': {
         target: process.env.REACT_APP_PROXY_TARGET || 'http://localhost:8080',
         changeOrigin: true,

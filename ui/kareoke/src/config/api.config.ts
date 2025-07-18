@@ -57,12 +57,12 @@ export const getApiBaseUrl = (): string => {
 
   switch (env) {
     case 'development':
-      return envApiUrl || 'http://localhost:3000/api';
+      return envApiUrl || 'http://localhost:3000/api/kareoke';
     case 'test':
-      return envApiUrl || 'http://localhost:3001/api';
+      return envApiUrl || 'http://localhost:3001/api/kareoke';
     case 'production':
-      return envApiUrl || '/api';
+      return envApiUrl || '/api/kareoke';
     default:
-      return envApiUrl || '/api';
+      return envApiUrl || '/api/kareoke';
   }
 };

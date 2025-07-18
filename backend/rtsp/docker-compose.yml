@@ -1,4 +1,7 @@
 version: "3.3"
+volumes:
+  kareoke_files:
+    external: true
 networks:
   kareoke_local:
     external: true
@@ -8,15 +11,15 @@ services:
     restart: always
     container_name: rtsp
     volumes:
-      - "/Volumes/kareoke:/mnt/kareoke"
+      - kareoke_files:/mnt/kareoke
     environment:
-      VIDEO_PATH: '/mnt/kareoke/video'
-      KAREOKE_PATH: '/mnt/kareoke/Songs'
-      HTTP_PORT: '8001'
-      RTSP_PORT: '4586'
-      RTP_LOGGING: 'false'
-      PLAYLIST_SERVER_URL: 'http://kareoke:8080'
-      PLACEHOLDER_VIDEO: '/mnt/kareoke/placeholder/discoball10.mp4'
+      VIDEO_PATH: "/mnt/kareoke/video"
+      KAREOKE_PATH: "/mnt/kareoke/Songs"
+      HTTP_PORT: "8001"
+      RTSP_PORT: "4586"
+      RTP_LOGGING: "true"
+      PLAYLIST_SERVER_URL: "http://kareoke:8080"
+      PLACEHOLDER_VIDEO: "/mnt/kareoke/placeholder/discoball10.mp4"
     networks:
       - kareoke_local
     ports:

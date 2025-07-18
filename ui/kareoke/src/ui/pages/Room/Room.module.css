@@ -1,0 +1,151 @@
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 16px;
+  display: flex;
+  gap: 16px;
+  padding-left: 32px;
+  padding-right: 32px;
+  height: calc(100vh - 64px);
+  min-height: calc(100vh - 64px);
+  box-sizing: border-box;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  flex: 1 1 0%;
+  min-height: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.sidebar {
+  max-width: 600px;
+  min-width: 0;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+}
+
+.accordionPlaylist {
+  width: 100%;
+  background-color: var(--mui-palette-background-paper);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: var(--mui-shadows-1);
+  padding-top: 0;
+  margin-bottom: 0;
+}
+
+.accordionAddSongs {
+  width: 100%;
+  background-color: var(--mui-palette-background-paper);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-shadow: var(--mui-shadows-1);
+
+  padding-top: 0;
+  max-height: 100%;
+  margin-top: -1px;
+}
+
+.accordionSummary {
+  padding-top: 0;
+}
+
+.accordionDetails {
+  padding-top: 0;
+  width: 100%;
+}
+
+.accordionDetailsAddSongs {
+  padding-top: 0;
+  width: 100%;
+  max-height: 700px;
+  flex: 1 1 auto;
+  overflow: scroll;
+  min-height: 0;
+  overflow: auto;
+}
+
+.videoPanel {
+  flex-grow: 2;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.videoContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: visible;
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+}
+
+.video {
+  height: 100%;
+  max-height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.18);
+  display: block;
+
+  flex: 1;
+}
+
+.nextButtonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  overflow: visible;
+}
+
+.nextButton {
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 16px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-top: 9.6px;
+  padding-bottom: 9.6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.45);
+  z-index: 1;
+  border-radius: 16px;
+}
+
+.startButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 16px;
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}

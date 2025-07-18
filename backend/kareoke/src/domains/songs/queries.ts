@@ -72,7 +72,7 @@ const SEARCH_TITLES_QUERY = `SELECT title, COUNT(*) as count, 'title' as resultT
 const SEARCH_SONG_BY_ARTIST_QUERY = `SELECT s.*, 'song' as resultType 
     FROM songs s 
     INNER JOIN titles t ON t.artist = s.artist AND s.title = t.title 
-    WHERE s.duration> 0 AND s.artist ILIKE $1 || '%' 
+    WHERE s.duration> 0 AND s.artist ILIKE '%' || $1 || '%' 
     ORDER BY s.artist, s.title
     LIMIT $2
     OFFSET $3`;
@@ -80,7 +80,7 @@ const SEARCH_SONG_BY_ARTIST_QUERY = `SELECT s.*, 'song' as resultType
 const SEARCH_SONG_BY_TITLE_QUERY = `SELECT s.*, 'song' as resultType 
     FROM songs s 
     INNER JOIN titles t ON t.artist = s.artist AND s.title = t.title 
-    WHERE s.duration> 0 AND s.title ILIKE $1 || '%' 
+    WHERE s.duration> 0 AND s.title ILIKE '%' || $1 || '%' 
     ORDER BY s.title, s.artist
     LIMIT $2
     OFFSET $3`;
@@ -88,7 +88,8 @@ const SEARCH_SONG_BY_TITLE_QUERY = `SELECT s.*, 'song' as resultType
 const SEARCH_SONG_BY_TEXT_QUERY = `SELECT s.*, 'song' as resultType 
     FROM songs s 
     INNER JOIN titles t ON t.artist = s.artist AND s.title = t.title 
-    WHERE s.duration> 0 AND (s.title ILIKE $1 || '%' OR s.artist ILIKE $1 || '%')
+    WHERE s.duration> 0 AND (s.title ILIKE '%' || $1 || '%' OR s.artist ILIKE '%' || $1 || '%')
+    ORDER BY s.title, s.artist, s.source
     LIMIT $2
     OFFSET $3`;
 

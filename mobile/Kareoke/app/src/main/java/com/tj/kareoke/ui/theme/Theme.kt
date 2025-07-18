@@ -2,6 +2,7 @@ package com.tj.kareoke.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
@@ -13,17 +14,18 @@ fun KareokeTheme(
     isInDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
+    val Blue1976D2 = Color(0xFF1976D2)
     val colorScheme = if (isInDarkTheme) {
         darkColorScheme(
-            primary = Purple80,
-            secondary = PurpleGrey80,
-            tertiary = Pink80
+            primary = Blue1976D2,
+            secondary = Blue1976D2,
+            tertiary = Blue1976D2
         )
     } else {
         lightColorScheme(
-            primary = Purple40,
-            secondary = PurpleGrey40,
-            tertiary = Pink40
+            primary = Blue1976D2,
+            secondary = Blue1976D2,
+            tertiary = Blue1976D2
         )
     }
     MaterialTheme(

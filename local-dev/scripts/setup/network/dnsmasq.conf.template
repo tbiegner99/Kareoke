@@ -1,0 +1,12 @@
+interface=<interface>
+dhcp-range=192.168.4.2,192.168.4.200,255.255.255.0,12h
+dhcp-option=3,192.168.4.1  # Gateway (your AP's IP)
+dhcp-option=6,192.168.4.1  # DNS server (your AP's IP)
+server=8.8.8.8         # Optional: Upstream DNS server
+domain=local      # Optional:  e.g., local
+address=/tj-kareoke/192.168.4.1
+address=/tj-kareoke.local/192.168.4.1
+address=/tj-kareoke.com/192.168.4.1
+listen-address=127.0.0.1 # Required
+no-resolv
+bind-interfaces

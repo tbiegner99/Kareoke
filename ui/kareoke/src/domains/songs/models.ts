@@ -9,9 +9,7 @@ export interface Song {
   duration: number;
   year: number;
   filePath: string;
-  formattedDuration: string;
-  isPlaying?: boolean;
-  isInPlaylist?: boolean;
+  source: string;
 }
 
 export interface SongsList {

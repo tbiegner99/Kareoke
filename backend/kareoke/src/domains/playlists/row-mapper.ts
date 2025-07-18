@@ -1,7 +1,7 @@
-import { PlaylistItem, Song, PlaylistItemRow } from './models.js';
+import { PlaylistItem, Song } from './models.js';
 
 class PlaylistRowMapper {
-    fromPlaylistItemRow(item: PlaylistItemRow): PlaylistItem {
+    fromPlaylistItemRow(item: any): PlaylistItem {
         return {
             position: Number(item.position),
             songId: item.song_id,
@@ -9,6 +9,7 @@ class PlaylistRowMapper {
             artist: item.artist,
             source: item.source,
             filename: item.filename,
+            duration: item.duration ? Number(item.duration) : 0, // Ensure duration is a number
         };
     }
 

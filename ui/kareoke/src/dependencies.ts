@@ -6,17 +6,32 @@
  * and other dependencies used throughout the app.
  */
 
+import { io, Socket } from 'socket.io-client';
 import { SongDatasource } from './domains/songs/datasource';
 import { SongService } from './domains/songs/service';
+import { RoomDatasource } from './domains/room/datasource';
+import { PlaylistDatasource } from './domains/playlist/datasource';
+import { PlaylistService } from './domains/playlist/service';
+import { RoomService } from './domains/room/service';
 
 // API Configuration
-const API_BASE_URL = process.env.BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = process.env.BASE_URL || '/api/kareoke';
+
+// Socket.IO connection
+const SOCKET_URL = '/';
+export const socket: Socket = io(SOCKET_URL, {
+  autoConnect: true,
+  path: '/kareoke/socket.io',
+  transports: ['websocket'],
+});
 
 /**
  * Datasource instances
  */
 export const datasources = {
   songs: new SongDatasource(API_BASE_URL),
+  room: new RoomDatasource(socket),
+  playlist: new PlaylistDatasource(API_BASE_URL),
 };
 
 /**
@@ -24,6 +39,8 @@ export const datasources = {
  */
 export const services = {
   songs: new SongService(datasources.songs),
+  playlist: new PlaylistService(datasources.playlist),
+  rooms: new RoomService(datasources.room), // Room service can be added later if needed
 };
 
 /**

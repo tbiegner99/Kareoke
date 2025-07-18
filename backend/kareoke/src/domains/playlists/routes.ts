@@ -14,3 +14,7 @@ playlistsRouter.delete(
     '/:playlistId/items/:position',
     controllers.playlistsController.removePlaylistItem
 );
+// Current track routes
+playlistsRouter.put('/:playlistId/current', controllers.playlistsController.updateCurrentTrack);
+playlistsRouter.get('/:playlistId/current', controllers.playlistsController.getCurrentTrack);
+playlistsRouter.delete('/:playlistId/current', controllers.playlistsController.clearCurrentTrack);

@@ -26,6 +26,30 @@ class PlaylistDatasource {
         private dbClient: DatabaseClient,
         private logger: Logger
     ) {}
+
+    async getCurrentTrack(playlistId: string): Promise<PlaylistItem | null> {
+        this.logger.debug('Fetching current track for playlist', { playlistId });
+        const result = await this.dbClient.query<PlaylistItemRow>(
+            playlistQueries.SELECT_CURRENT_TRACK,
+            [playlistId]
+        );
+        if (result.length === 0) {
+            this.logger.debug('No current track found', { playlistId });
+            return null;
+        }
+        return playlistRowMapper.fromPlaylistItemRow(result[0]);
+    }
+
+    async setCurrentTrack(playlistId: string, songId: number): Promise<void> {
+        this.logger.debug('Setting current track for playlist', { playlistId, songId });
+        await this.dbClient.execute(playlistQueries.UPDATE_CURRENT_TRACK, [playlistId, songId]);
+    }
+
+    async clearCurrentTrack(playlistId: string): Promise<void> {
+        this.logger.debug('Clearing current track for playlist', { playlistId });
+        await this.dbClient.execute(playlistQueries.CLEAR_CURRENT_TRACK, [playlistId]);
+    }
+
     async getAllPlaylistItems(playlistId: string): Promise<PlaylistItem[]> {
         this.logger.debug('Fetching all playlist items', { playlistId });
         const result = await this.dbClient.query<PlaylistItemRow>(

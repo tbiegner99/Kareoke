@@ -11,9 +11,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import com.tj.kareoke.domains.playlist.PlaylistSong
 
 data class TrackCardArgs(
-    val track: String,
+    val track: PlaylistSong,
     val index: Int
 )
 
@@ -33,7 +34,7 @@ fun TrackCard(args: TrackCardArgs, onClick: () -> Unit = {}) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "${args.index + 1}. ${args.track}",
+                text = "${args.index + 1}. ${args.track.title} - ${args.track.artist}",
                 color = Color.Yellow,
                 fontSize = 18.sp
             )

@@ -6,18 +6,10 @@ import {
   getApiBaseUrl,
 } from '../../config/api.config';
 import { Song } from './models';
-
-// Interface for API search requests
-interface SongSearchApiRequest {
-  query?: string;
-  genre?: string;
-  artist?: string;
-  year?: number;
-  page?: number;
-  pageSize?: number;
-  sortBy?: string;
-  sortOrder?: string;
-}
+import { PageInfo } from '../../models/PageInfo';
+import { AxiosInstance } from 'axios';
+import { SongMapper } from './mapper';
+import { SearchResult } from 'models/SearchResult';
 
 // Interface for backend search requests (different from UI search)
 interface BackendSearchRequest {
@@ -28,10 +20,12 @@ interface BackendSearchRequest {
 }
 
 export class SongDatasource {
-  private client: any; // axios instance
+  private client: AxiosInstance;
+  private mapper: SongMapper;
 
   constructor(baseUrl?: string) {
     const apiBaseUrl = baseUrl || getApiBaseUrl();
+    this.mapper = new SongMapper();
 
     this.client = axios.create({
       baseURL: apiBaseUrl,
@@ -43,47 +37,12 @@ export class SongDatasource {
   }
 
   /**
-   * Get all songs with optional filtering and pagination
-   * Note: Backend doesn't support pagination yet, so we handle filtering client-side
-   */
-  async getSongs(params: SongSearchApiRequest = {}): Promise<any> {
-    try {
-      // If we have search parameters, use the search endpoint
-      if (params.query || params.artist || params.genre) {
-        return this.searchSongs(params);
-      }
-
-      // Otherwise get all songs
-      const response = await this.client.get(API_ENDPOINTS.SONGS.BASE);
-
-      // Simulate pagination response structure for frontend compatibility
-      const songs = response.data;
-      const startIndex = ((params.page || 1) - 1) * (params.pageSize || 20);
-      const endIndex = startIndex + (params.pageSize || 20);
-      const paginatedSongs = songs.slice(startIndex, endIndex);
-
-      return {
-        songs: paginatedSongs,
-        total: songs.length,
-        page: params.page || 1,
-        pageSize: params.pageSize || 20,
-      };
-    } catch (error: any) {
-      throw new Error(
-        `Failed to fetch songs: ${error.response?.status || 'Unknown error'} ${
-          error.response?.statusText || error.message
-        }`
-      );
-    }
-  }
-
-  /**
    * Get a single song by ID
    */
   async getSongById(id: string): Promise<Song> {
     try {
       const response = await this.client.get(API_ENDPOINTS.SONGS.BY_ID(id));
-      return response.data;
+      return this.mapper.toSong(response.data);
     } catch (error: any) {
       throw new Error(
         `Failed to fetch song: ${error.response?.status || 'Unknown error'} ${
@@ -102,7 +61,7 @@ export class SongDatasource {
         API_ENDPOINTS.SONGS.BASE,
         songData
       );
-      return response.data;
+      return this.mapper.toSong(response.data);
     } catch (error: any) {
       throw new Error(
         `Failed to create song: ${error.response?.status || 'Unknown error'} ${
@@ -121,7 +80,7 @@ export class SongDatasource {
         API_ENDPOINTS.SONGS.BY_ID(songData.id),
         songData
       );
-      return response.data;
+      return this.mapper.toSong(response.data);
     } catch (error: any) {
       throw new Error(
         `Failed to update song: ${error.response?.status || 'Unknown error'} ${
@@ -149,33 +108,34 @@ export class SongDatasource {
   /**
    * Search songs with advanced filtering
    */
-  async searchSongs(searchRequest: SongSearchApiRequest): Promise<any> {
+  async searchSongs(
+    query: string,
+    pageInfo: PageInfo
+  ): Promise<SearchResult<Song>> {
     try {
       const backendRequest: BackendSearchRequest = {
-        query: searchRequest.query || '',
-        searchMode: searchRequest.artist ? 'artist' : 'text',
+        query: query || '',
+        searchMode: 'text',
         exact: false,
         resultType: 'full',
       };
 
       const response = await this.client.post(
         API_ENDPOINTS.SONGS.SEARCH,
-        backendRequest
+        backendRequest,
+        {
+          params: {
+            page: pageInfo.page || 1,
+            limit: pageInfo.pageSize || 20,
+          },
+        }
       );
 
-      // Transform backend response to match expected format
-      const songs = response.data;
-      const page = searchRequest.page || 1;
-      const pageSize = searchRequest.pageSize || 20;
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const paginatedSongs = songs.slice(startIndex, endIndex);
-
       return {
-        songs: paginatedSongs,
-        total: songs.length,
-        page: page,
-        pageSize: pageSize,
+        results: this.mapper.toSongs(response.data?.results || []),
+        itemCount: response.data?.total || 0,
+        page: pageInfo.page || 1,
+        pageSize: pageInfo.pageSize || 20,
       };
     } catch (error: any) {
       throw new Error(
@@ -184,17 +144,6 @@ export class SongDatasource {
         }`
       );
     }
-  }
-
-  /**
-   * Get songs by artist
-   */
-  async getSongsByArtist(
-    artist: string,
-    page = 1,
-    pageSize = 20
-  ): Promise<any> {
-    return this.searchSongs({ artist, page, pageSize });
   }
 
   /**

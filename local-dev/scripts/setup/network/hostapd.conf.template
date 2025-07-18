@@ -1,0 +1,9 @@
+interface=<interface>
+hw_mode=g
+channel=10
+ieee80211d=1
+country_code=FR
+ieee80211n=1
+wmm_enabled=1
+ssid=<ssid>
+# since there is no encryption defined, none will be used

@@ -4,7 +4,8 @@ import { Logger } from '../../utils/logger';
 import { HTTPStatus } from '../../utils/constants';
 import { PlaylistItem } from './models';
 import { SongsService } from '../songs/service';
-
+import EventEmitter from 'events';
+import { servers } from '../../dependencies';
 // Enqueue types enum
 enum EnqueueTypes {
     FRONT = 'atFront',
@@ -12,6 +13,7 @@ enum EnqueueTypes {
     END = 'atEnd',
     UP_ONE_POSITION = 'up',
     DOWN_ONE_POSITION = 'down',
+    NEW_POSITION = 'newPosition',
 }
 
 interface EnqueueRequestBody {
@@ -33,8 +35,76 @@ class PlaylistsController {
     constructor(
         private playlistService: PlaylistService,
         private songService: SongsService,
-        private logger: Logger
-    ) {}
+        private logger: Logger,
+        private eventEmitter: EventEmitter
+    ) {
+        this.eventEmitter.on('playlistChanged', async data => {
+            this.logger.info('Sending Playlist Changed to clients of playlist', {
+                playlistId: data.playlistId,
+            });
+
+            servers.socketIO.to(data.playlistId).emit('playlistChanged', data.newState);
+        });
+        this.eventEmitter.on('playingStateChanged', async data => {
+            this.logger.info('Sending Playlist Playing State Changed to clients of playlist', {
+                playlistId: data.playlistId,
+            });
+
+            servers.socketIO.to(data.playlistId).emit('playingStateChanged', { song: data.song });
+        });
+    }
+    getCurrentTrack = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { playlistId } = req.params;
+            this.logger.debug('Getting current track', { playlistId });
+            if (!playlistId) {
+                res.status(HTTPStatus.BAD_REQUEST).send('playlistId is required');
+                return;
+            }
+            const song = await this.playlistService.getCurrentTrack(playlistId);
+            if (!song) {
+                this.logger.debug('No current track found', { playlistId });
+                res.sendStatus(HTTPStatus.NO_CONTENT);
+                return;
+            }
+            res.status(HTTPStatus.OK).send(song);
+        } catch (error) {
+            this.logger.error('Failed to get current track', { error });
+            res.status(HTTPStatus.INTERNAL_SERVER_ERROR).send('Failed to get current track');
+        }
+    };
+    updateCurrentTrack = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { playlistId } = req.params;
+            const { songId } = req.body;
+            this.logger.debug('Updating current track', { playlistId, songId });
+            if (!playlistId || !songId) {
+                res.status(HTTPStatus.BAD_REQUEST).send('playlistId and songId are required');
+                return;
+            }
+            await this.playlistService.setCurrentTrack(playlistId, songId);
+            res.status(HTTPStatus.OK).send({ success: true });
+        } catch (error) {
+            this.logger.error('Failed to update current track', { error });
+            res.status(HTTPStatus.INTERNAL_SERVER_ERROR).send('Failed to update current track');
+        }
+    };
+
+    clearCurrentTrack = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { playlistId } = req.params;
+            this.logger.debug('Clearing current track', { playlistId });
+            if (!playlistId) {
+                res.status(HTTPStatus.BAD_REQUEST).send('playlistId is required');
+                return;
+            }
+            await this.playlistService.clearCurrentTrack(playlistId);
+            res.status(HTTPStatus.OK).send({ success: true });
+        } catch (error) {
+            this.logger.error('Failed to clear current track', { error });
+            res.status(HTTPStatus.INTERNAL_SERVER_ERROR).send('Failed to clear current track');
+        }
+    };
 
     selectPlaylistItems = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -101,6 +171,7 @@ class PlaylistsController {
             artist,
             source,
             filename,
+            duration: 0,
         };
         await this.playlistService.addItemAtFront(playlistId, item);
     }
@@ -125,6 +196,7 @@ class PlaylistsController {
             artist,
             source,
             filename,
+            duration: 0,
         };
         await this.playlistService.addItemAfter(playlistId, afterPosition, item);
     }
@@ -142,6 +214,7 @@ class PlaylistsController {
             artist,
             source,
             filename,
+            duration: 0,
         };
         await this.playlistService.enqueuePlaylistItem(playlistId, item);
     }
@@ -207,6 +280,24 @@ class PlaylistsController {
         await this.playlistService.moveItemAfter(playlistId, currentItemPosition, afterPosition);
     }
 
+    private async moveItemToNewPosition(
+        req: Request,
+        playlistId: string,
+        currentItemPosition: number
+    ): Promise<void> {
+        const { newPosition } = req.body;
+
+        if (newPosition === undefined) {
+            throw new Error('newPosition is required for move item');
+        }
+
+        await this.playlistService.moveItemToNewPosition(
+            playlistId,
+            currentItemPosition,
+            newPosition
+        );
+    }
+
     moveItem = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { method } = req.body as MoveItemRequestBody;
@@ -249,6 +340,10 @@ class PlaylistsController {
                 case EnqueueTypes.AFTER_ITEM:
                     await this.moveAfterItem(req, playlistId, currentItemPosition);
                     break;
+                case EnqueueTypes.NEW_POSITION:
+                    await this.moveItemToNewPosition(req, playlistId, currentItemPosition);
+                    break;
+
                 case EnqueueTypes.END:
                 default:
                     await this.playlistService.moveItemToEnd(playlistId, currentItemPosition);

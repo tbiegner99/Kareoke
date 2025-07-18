@@ -159,10 +159,12 @@ class SongsDatasource {
         const results = await this.dbClient.query(query, paramArray);
         this.logger.debug('Search query completed', { resultCount: results.length, params });
 
-        const count = await this.dbClient
-            .queryRow<{ count: number }>(countQuery, countParams)
-            .then(row => Object.values(row)[0]);
+        const countResult = await this.dbClient.queryRow<{ count: number }>(
+            countQuery,
+            countParams
+        );
 
+        const count = countResult ? Number(countResult.count) : 0;
         const songs = results.map((row: any) => songsRowMapper.fromSongResult(row));
         return {
             results: songs,

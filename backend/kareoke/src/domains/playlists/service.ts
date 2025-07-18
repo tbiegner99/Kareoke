@@ -2,15 +2,50 @@ import { PlaylistDatasource } from './datasource';
 import { PlaylistItem, Song } from './models';
 import { Logger } from '../../utils/logger';
 import { SongsService } from '../songs/service';
+import EventEmitter from 'events';
 
 class PlaylistService {
     constructor(
         private playlistDatasource: PlaylistDatasource,
-        private logger: Logger
+        private songsService: SongsService,
+        private logger: Logger,
+        private eventEmitter: EventEmitter
     ) {}
+    getCurrentTrack(playlistId: string): Promise<PlaylistItem | null> {
+        return this.playlistDatasource.getCurrentTrack(playlistId);
+    }
+    async setCurrentTrack(playlistId: string, songId: number): Promise<void> {
+        this.logger.info('Setting current track', { playlistId, songId });
+        await this.playlistDatasource.setCurrentTrack(playlistId, songId);
+        await this.emitPlayingStateChangeEvent(playlistId, songId);
+    }
 
+    async clearCurrentTrack(playlistId: string): Promise<void> {
+        this.logger.info('Clearing current track', { playlistId });
+        await this.playlistDatasource.clearCurrentTrack(playlistId);
+        await this.emitPlayingStateChangeEvent(playlistId, null);
+    }
     private computeNewPosition(lowerBoundPosition: number, upperBoundPosition: number): number {
         return (lowerBoundPosition + upperBoundPosition) / 2;
+    }
+
+    private async emitChangeEvent(playlistId: string): Promise<void> {
+        const items = await this.getPlaylistItems(playlistId); // Ensure we have the latest items
+        this.eventEmitter.emit('playlistChanged', { playlistId, newState: items });
+        this.logger.info('Playlist change event emitted', { playlistId });
+    }
+
+    private async emitPlayingStateChangeEvent(
+        playlistId: string,
+        songId: number | null
+    ): Promise<void> {
+        if (!songId) {
+            this.eventEmitter.emit('playingStateChanged', { playlistId, song: null });
+            return;
+        }
+        const song = await this.songsService.getSongById(songId!.toString()); // Ensure we have the latest items
+        this.eventEmitter.emit('playingStateChanged', { playlistId, song: song });
+        this.logger.info('Playlist play statechange event emitted', { playlistId });
     }
 
     async peekPlaylistItem(playlistId: string): Promise<PlaylistItem | null> {
@@ -40,6 +75,7 @@ class PlaylistService {
                 playlistId,
                 position: firstItem.position,
             });
+            this.emitChangeEvent(playlistId);
             return firstItem;
         } catch (error) {
             this.logger.error('Error dequeuing playlist item', { playlistId, error });
@@ -52,6 +88,7 @@ class PlaylistService {
             this.logger.debug('Removing item at position', { playlistId, position });
             await this.playlistDatasource.deletePlaylistItemAtPosition(playlistId, position);
             this.logger.info('Item removed successfully', { playlistId, position });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error removing item at position', { playlistId, position, error });
             throw new Error('Failed to remove item at position');
@@ -87,6 +124,7 @@ class PlaylistService {
             this.logger.info('Clearing playlist', { playlistId });
             await this.playlistDatasource.clearPlaylist(playlistId);
             this.logger.info('Playlist cleared successfully', { playlistId });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error clearing playlist', { playlistId, error });
             throw new Error('Failed to clear playlist');
@@ -120,6 +158,7 @@ class PlaylistService {
                 songId: playlistItem.songId,
                 position: positionToAdd,
             });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error enqueuing playlist item', {
                 playlistId,
@@ -147,6 +186,7 @@ class PlaylistService {
                 songId: playlistItem.songId,
                 position: positionToAdd,
             });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error adding item at front', {
                 playlistId,
@@ -186,6 +226,7 @@ class PlaylistService {
                     songId: playlistItem.songId,
                     newPosition: positionToAdd,
                 });
+                this.emitChangeEvent(playlistId);
             }
         } catch (error) {
             this.logger.error('Error adding item after position', {
@@ -213,6 +254,7 @@ class PlaylistService {
 
             await this.moveItemAfter(playlistId, itemPositionToMove, twoItemsBefore.position);
             this.logger.info('Item moved up successfully', { playlistId, itemPositionToMove });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error moving item up', { playlistId, itemPositionToMove, error });
             throw new Error('Failed to move item up');
@@ -234,6 +276,7 @@ class PlaylistService {
 
             await this.moveItemAfter(playlistId, itemPositionToMove, nextPosition);
             this.logger.info('Item moved down successfully', { playlistId, itemPositionToMove });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error moving item down', { playlistId, itemPositionToMove, error });
             throw new Error('Failed to move item down');
@@ -257,6 +300,7 @@ class PlaylistService {
                 itemPositionToMove,
                 newPosition,
             });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error moving item to end', {
                 playlistId,
@@ -284,6 +328,7 @@ class PlaylistService {
                 itemPositionToMove,
                 newPosition,
             });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error moving item to front', {
                 playlistId,
@@ -291,6 +336,39 @@ class PlaylistService {
                 error,
             });
             throw new Error('Failed to move item to front');
+        }
+    }
+
+    async moveItemToNewPosition(
+        playlistId: string,
+        currentItemPosition: number,
+        newPosition: number
+    ): Promise<void> {
+        try {
+            this.logger.debug('Moving item to new position', {
+                playlistId,
+                currentItemPosition,
+                newPosition,
+            });
+            await this.playlistDatasource.updateItemPosition(
+                playlistId,
+                currentItemPosition,
+                newPosition
+            );
+            this.logger.info('Item moved to new position successfully', {
+                playlistId,
+                currentItemPosition,
+                newPosition,
+            });
+            this.emitChangeEvent(playlistId);
+        } catch (error) {
+            this.logger.error('Error moving item to new position', {
+                playlistId,
+                currentItemPosition,
+                newPosition,
+                error,
+            });
+            throw new Error('Failed to move item to new position');
         }
     }
 
@@ -338,6 +416,7 @@ class PlaylistService {
                 afterPosition,
                 newPosition,
             });
+            this.emitChangeEvent(playlistId);
         } catch (error) {
             this.logger.error('Error moving item after position', {
                 playlistId,

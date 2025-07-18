@@ -4,7 +4,7 @@ export class SongMapper {
   /**
    * Maps a single song from API response to UI model
    */
-  static toUiModel(apiSong: any): Song {
+  toSong(apiSong: any): Song {
     return {
       id: apiSong.id,
       title: apiSong.title,
@@ -13,18 +13,16 @@ export class SongMapper {
       duration: apiSong.duration,
       year: apiSong.year,
       filePath: apiSong.filePath,
-      formattedDuration: this.formatDuration(apiSong.duration),
-      isPlaying: false,
-      isInPlaylist: false,
+      source: apiSong.source,
     };
   }
 
   /**
    * Maps songs list from API response to UI model
    */
-  static toUiSongsList(apiResponse: any): SongsList {
+  toSongsList(apiResponse: any): SongsList {
     return {
-      songs: apiResponse.songs.map((song: any) => this.toUiModel(song)),
+      songs: apiResponse.songs.map((song: any) => this.toSong(song)),
       pagination: {
         page: apiResponse.page,
         pageSize: apiResponse.pageSize,
@@ -36,7 +34,7 @@ export class SongMapper {
   /**
    * Maps create song data from UI to API request
    */
-  static toCreateApiRequest(uiData: CreateSongData): any {
+  toCreateApiRequest(uiData: CreateSongData): any {
     return {
       title: uiData.title,
       artist: uiData.artist,
@@ -50,7 +48,7 @@ export class SongMapper {
   /**
    * Maps update song data from UI to API request
    */
-  static toUpdateApiRequest(uiData: UpdateSongData): any {
+  toUpdateApiRequest(uiData: UpdateSongData): any {
     const request: any = {
       title: uiData.title,
       artist: uiData.artist,
@@ -64,18 +62,9 @@ export class SongMapper {
   }
 
   /**
-   * Formats duration from seconds to MM:SS format
-   */
-  private static formatDuration(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  /**
    * Maps multiple songs to UI models
    */
-  static toUiModels(apiSongs: any[]): Song[] {
-    return apiSongs.map(song => this.toUiModel(song));
+  toSongs(apiSongs: any[]): Song[] {
+    return apiSongs.map(song => this.toSong(song));
   }
 }

@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.tj.kareoke"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -61,6 +61,8 @@ dependencies {
     // implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     // implementation("com.google.android.exoplayer:exoplayer-ui:2.19.1")
     // implementation("com.google.android.exoplayer:extension-rtsp:2.19.1")
+    implementation("com.github.alexeyvasilyev:rtsp-client-android:5.3.5")
+    implementation("io.socket:socket.io-client:2.1.1")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)

@@ -7,7 +7,7 @@ case $1 in
         ;;
     secrets | ss)
         shift
-        $KAREOKE_HOME/backend/secrets/setup.sh $@
+        $KAREOKE_HOME/secrets/setup.sh $@
         ;;
     alias)
         shift
@@ -18,6 +18,10 @@ case $1 in
         SERVICE=$($KAREOKE_HOME/local-dev/scripts/alias.sh $1)
         shift
         docker exec -it $SERVICE sh
+        ;;
+    initialize | init)
+        shift
+        $KAREOKE_HOME/local-dev/scripts/setup/initialize.sh $@
         ;;
 
      exec | e)

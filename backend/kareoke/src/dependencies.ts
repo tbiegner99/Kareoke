@@ -9,6 +9,10 @@ import { SongsService } from './domains/songs/service';
 import { PlaylistsController } from './domains/playlists/controller';
 import { SongsController } from './domains/songs/controller';
 import { logger, createDomainLogger } from './utils/logger';
+import EventEmtter from 'events';
+import { createServer } from 'http';
+import express from 'express';
+import { Server } from 'socket.io';
 
 const readDBPassword = (): string => {
     const { DB_PASSWORD_FILE, DB_PASSWORD } = process.env;
@@ -71,6 +75,16 @@ const dbClient = DBClientFactory.getClient(dbName);
 // Create domain-specific loggers
 const playlistLogger = createDomainLogger('playlists');
 const songsLogger = createDomainLogger('songs');
+const eventEmitter = new EventEmtter();
+const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+    path: '/kareoke/socket.io',
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+    },
+});
 
 export const datasources = {
     playlistDatasource: new PlaylistDatasource(dbClient, playlistLogger),
@@ -80,17 +94,30 @@ export const datasources = {
 const songsService = new SongsService(datasources.songsDatasource, songsLogger);
 
 export const services = {
-    playlistService: new PlaylistService(datasources.playlistDatasource, playlistLogger),
-    songsService: new SongsService(datasources.songsDatasource, songsLogger),
+    playlistService: new PlaylistService(
+        datasources.playlistDatasource,
+        songsService,
+        playlistLogger,
+        eventEmitter
+    ),
+    songsService,
 };
 
 export const controllers = {
     playlistsController: new PlaylistsController(
         services.playlistService,
         services.songsService,
-        playlistLogger
+        playlistLogger,
+        eventEmitter
     ),
     songsController: new SongsController(services.songsService, songsLogger),
+};
+
+export const servers = {
+    socketIO: io,
+    express: app,
+    eventEmitter,
+    server,
 };
 
 // Logger exports

@@ -109,7 +109,7 @@ class SongsController {
             } = req.body as SearchRequestBody;
             const { limit, page } = req.query;
 
-            if (!query || !searchMode) {
+            if (typeof query !== 'string' || !searchMode) {
                 this.logger.warn('Invalid search request', { body: req.body });
                 res.status(HTTPStatus.BAD_REQUEST).send(
                     'Missing required fields: query, searchMode'

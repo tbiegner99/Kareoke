@@ -12,24 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import com.tj.kareoke.domains.playlist.PlaylistSong
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@androidx.compose.ui.tooling.preview.Preview
-fun UpcomingTracksPanelPreview() {
-    UpcomingTracksPanel()
-}
+fun UpcomingTracksPanel(modifier: Modifier = Modifier, songs:List<PlaylistSong>) {
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun UpcomingTracksPanel(modifier: Modifier = Modifier) {
-    val tracks = listOf(
-        "Aohemian Rhapsody",
-        "Don't Stop Believin'",
-        "Sweet Caroline",
-        "Livin' on a Prayer",
-        "Dancing Queen"
-    )
     Surface(
         modifier = modifier.height(40.dp)
             .fillMaxWidth(),
@@ -37,9 +27,9 @@ fun UpcomingTracksPanel(modifier: Modifier = Modifier) {
         color = Color.Black
     ) {
         LazyRow(modifier = Modifier.fillMaxSize()) {
-                itemsIndexed(tracks) { index, track ->
+                itemsIndexed(songs) { index, song ->
                     TrackCard(
-                        args = TrackCardArgs(track = track, index = index)
+                        args = TrackCardArgs(track = song, index = index)
                     )
                 }
             }

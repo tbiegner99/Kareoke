@@ -32,15 +32,16 @@ import kotlinx.coroutines.launch
 fun MenuBar(
     drawerState: DrawerState,
     scope: CoroutineScope,
-    roomId: Int,
+    roomId: String,
 ) {
+    var color=MaterialTheme.colorScheme
     TopAppBar(
         title = {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "Kareoke Room $roomId",
                     fontSize = 18.sp,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.Center)
                 )
@@ -52,13 +53,12 @@ fun MenuBar(
                     drawerState.open()
                 }
             }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = Color.White)
+                Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.onPrimary)
             }
         },
-        modifier = Modifier.height(40.dp),
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = Color.White
-        )
+            containerColor = color.primary
+        ),
+        modifier = Modifier.height(40.dp)
     )
 }

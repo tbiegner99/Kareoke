@@ -22,3 +22,12 @@ if [ -z "$EXISTING_NETWORK" ]; then
 else
     echo "Network 'kareoke_local' already exists."
 fi
+
+
+source ~/.bashrc > /dev/null
+source ~/.zshrc > /dev/null
+
+echo "Kareoke setup complete. You can now use the kareoke command. You may need to source your shell configuration file again."
+echo "Run 'kareoke' to see available commands."
+
+

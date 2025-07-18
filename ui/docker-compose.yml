@@ -1,10 +1,15 @@
 version: "3"
+volumes:
+  kareoke_files:
+    external: true
 networks:
   kareoke_local:
     external: true
 services:
   "kareoke-ui":
     image: nginx
+    environment:
+      - VIDEO_PATH=/mnt/kareoke/video
     container_name: "kareoke-ui"
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
@@ -13,8 +18,10 @@ services:
     networks:
       - kareoke_local
     volumes:
+      - kareoke_files:/mnt/kareoke
       - "$KAREOKE_HOME/ui/apps:/srv/package"
       - "$KAREOKE_HOME/ui:/ui-config"
       - "$KAREOKE_HOME/ui/apps/ci-helpers:/setup"
       - "$KAREOKE_HOME/local-dev/nginx/certs:/srv/certs"
-      - "$KAREOKE_HOME/local-dev/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "$KAREOKE_HOME/local-dev/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "$KAREOKE_HOME/local-dev/nginx/templates:/etc/nginx/templates"
