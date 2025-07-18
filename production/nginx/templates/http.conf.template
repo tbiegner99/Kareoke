@@ -29,6 +29,11 @@ server {
                 set $upstream $1;
                 proxy_pass http://$upstream:8080;
               }
+
+              location /kareoke/app {
+                alias /etc/nginx/html;
+                try_files $uri $uri/ /index.html;
+              }
               
               location / {
                 try_files $uri $uri/ /index.html;
