@@ -22,7 +22,8 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 import { PlaylistController } from './ui/pages/Playlist/PlaylistController';
 
-import { BASE_URL } from './utils/constants';
+
+import {Urls, BASE_URL} from './utils/Urls';
 
 const AppContainer = () => {
   return (
@@ -57,6 +58,7 @@ const App: React.FC = () => {
                   </Route>
                   <Route path='*' element={<Home />} />
                 </Route>
+                <Route path='*' element={<Navigate to={Urls.home} />} />
               </Routes>
             </Box>
           </Router>

@@ -5,7 +5,7 @@ server {
 
           
            
-             location /kareoke/app/ {
+             location / {
                 alias /srv/package/;
                 try_files $uri $uri/ /index.html;
              }
