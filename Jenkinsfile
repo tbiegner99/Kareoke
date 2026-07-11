@@ -71,7 +71,7 @@ pipeline {
                                 makeEmptyDirs: true,
                                 noDefaultExcludes: false,
                                 patternSeparator: '[, ]+',
-                                remoteDirectory: 'vms/kareoke',
+                                remoteDirectory: 'vms/Kareoke',
                                 remoteDirectorySDF: false,
                                 removePrefix: '',
                                 sourceFiles: 'backend/**/*, ui/**/*, production/**/*, database/**/*'
