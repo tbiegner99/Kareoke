@@ -3,6 +3,7 @@ import { controllers } from './dependencies';
 import { HTTPStatus } from './utils/constants';
 import { songsRouter } from './domains/songs/routes';
 import { playlistsRouter } from './domains/playlists/routes';
+import { youtubeImportRouter } from './domains/youtube-import/routes';
 
 export const router = express.Router();
 
@@ -14,3 +15,4 @@ router.get('/health', (req: Request, res: Response) => {
 // Mount domain routers
 router.use('/songs', songsRouter);
 router.use('/playlist', playlistsRouter);
+router.use('/youtube', youtubeImportRouter);

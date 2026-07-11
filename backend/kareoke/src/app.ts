@@ -46,7 +46,7 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
         url: req.url,
         method: req.method,
     });
-    res.status(err.status ? err.status : HTTPStatus.SERVER_ERROR).send(
+    res.status(err.statusCode || err.status || HTTPStatus.SERVER_ERROR).send(
         err.message || 'Internal Server Error'
     );
 };
@@ -71,6 +71,16 @@ io.on('connection', (socket: Socket) => {
     socket.on('leaveRoom', (roomId: string) => {
         socket.leave(roomId);
         logger.info('User left room', { socketId: socket.id, roomId });
+    });
+
+    socket.on('joinImportJob', (jobId: string) => {
+        socket.join(`import:${jobId}`);
+        logger.info('User joined import job room', { socketId: socket.id, jobId });
+    });
+
+    socket.on('leaveImportJob', (jobId: string) => {
+        socket.leave(`import:${jobId}`);
+        logger.info('User left import job room', { socketId: socket.id, jobId });
     });
 
     socket.on('skipCurrentSong', (roomId: string, callback: (error?: any) => void) => {

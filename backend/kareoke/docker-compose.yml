@@ -1,4 +1,7 @@
 version: '3'
+volumes:
+  kareoke_files:
+    external: true
 networks:
   kareoke_local:
     external: true
@@ -19,6 +22,7 @@ services:
       - DB_SCHEMA=kareoke
       - DB_PASSWORD_FILE=/run/secrets/ha_db_password
       - DB_USER_FILE=/run/secrets/ha_db_user
+      - VIDEO_PATH=/mnt/kareoke/Songs
     container_name: kareoke
     networks:
       - kareoke_local
@@ -29,4 +33,5 @@ services:
       - '8080:8080'
       - '40000:40000'
     volumes:
+      - 'kareoke_files:/mnt/kareoke'
       - '$KAREOKE_HOME/backend/kareoke:/srv/package'

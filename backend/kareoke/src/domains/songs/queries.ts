@@ -5,8 +5,8 @@ const INSERT_TITLES_QUERY = `INSERT INTO titles (title, artist)
     VALUES ($1, $2) 
     ON CONFLICT (title, artist) DO NOTHING`;
 
-const INSERT_SONGS_QUERY = `INSERT INTO songs (title, artist, source, filename) 
-    VALUES ($1, $2, $3, $4) 
+const INSERT_SONGS_QUERY = `INSERT INTO songs (title, artist, source, filename, duration)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING song_id`;
 
 // Predefined update queries for common operations

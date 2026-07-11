@@ -44,7 +44,7 @@ class SongsDatasource {
         // Then insert into songs table and get the ID
         const result = await this.dbClient.insert<{ song_id: string }>(
             songsQueries.INSERT_SONGS_QUERY,
-            [params.title, params.artist, params.source, params.filename]
+            [params.title, params.artist, params.source, params.filename, songData.duration || 0]
         );
 
         this.logger.info('Song created successfully', {

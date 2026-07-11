@@ -24,9 +24,8 @@ export const Room = ({
   onLoadNextVideo: () => void;
 }) => {
   const interval = React.useRef<any>(null);
-  const [expanded, setExpanded] = React.useState<
-    'playlist' | 'addSongs' | false
-  >('playlist');
+  const [playlistExpanded, setPlaylistExpanded] = React.useState(true);
+  const [addSongsExpanded, setAddSongsExpanded] = React.useState(false);
   const [isStarted, setIsStarted] = React.useState(true);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
@@ -57,10 +56,8 @@ export const Room = ({
       <div className={styles.mainContent}>
         <div className={styles.sidebar}>
           <Accordion
-            expanded={expanded === 'playlist'}
-            onChange={(_, isExpanded) =>
-              setExpanded(isExpanded ? 'playlist' : false)
-            }
+            expanded={playlistExpanded}
+            onChange={(_, isExpanded) => setPlaylistExpanded(isExpanded)}
             disableGutters
             className={styles.accordionPlaylist}
           >
@@ -79,10 +76,8 @@ export const Room = ({
             </AccordionDetails>
           </Accordion>
           <Accordion
-            expanded={expanded === 'addSongs'}
-            onChange={(_, isExpanded) =>
-              setExpanded(isExpanded ? 'addSongs' : false)
-            }
+            expanded={addSongsExpanded}
+            onChange={(_, isExpanded) => setAddSongsExpanded(isExpanded)}
             disableGutters
             className={styles.accordionAddSongs}
           >

@@ -56,6 +56,7 @@ services:
       - DB_SCHEMA=kareoke
       - DB_PASSWORD_FILE=/run/secrets/ha_db_password
       - DB_USER_FILE=/run/secrets/ha_db_user
+      - VIDEO_PATH=/mnt/kareoke/video
     container_name: kareoke
 
     networks:
@@ -65,3 +66,5 @@ services:
       - ha_db_password
     ports:
       - "8080"
+    volumes:
+      - kareoke_files:/mnt/kareoke

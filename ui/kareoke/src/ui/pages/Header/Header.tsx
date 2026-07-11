@@ -23,7 +23,7 @@ const Header: React.FC = () => {
     >
       <Toolbar>
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          {Boolean(roomId) && <PlaylistDrawer />}
+          <PlaylistDrawer />
           <Button
             color='inherit'
             startIcon={

@@ -1,0 +1,50 @@
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.searchRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.resultCard {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  min-height: 140px;
+}
+
+.thumbnail {
+  width: 280px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: none;
+  order: 2;
+}
+
+.resultInfo {
+  flex: 1;
+  min-width: 0;
+  order: 1;
+}
+
+.editRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.editRow > button {
+  margin-top: 4px;
+}

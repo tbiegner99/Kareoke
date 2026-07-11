@@ -24,15 +24,13 @@ const getEnvironmentVariables = () => {
 
 module.exports = defineConfig({
   context: __dirname,
-  
+
   entry: {
     main: './src/index.tsx',
-    
-    
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],
-  
+
     alias: {
       '@': require('path').resolve(__dirname, 'src'),
       context: require('path').resolve(__dirname, 'src/context'),
@@ -124,6 +122,7 @@ module.exports = defineConfig({
   },
   output: {
     path: require('path').resolve(__dirname, 'dist'),
+    publicPath: '/kareoke/app/',
     filename: isDev ? '[name].js' : '[name].[contenthash:8].js',
     chunkFilename: isDev
       ? '[name].chunk.js'
@@ -135,15 +134,21 @@ module.exports = defineConfig({
     port: 3000,
     open: true,
     hot: true,
-    historyApiFallback: true,
+    historyApiFallback: {
+      index: '/kareoke/app/index.html',
+    },
     compress: true,
+    setupMiddlewares: (middlewares, devServer) => {
+      devServer.app.get('/', (req, res) => res.redirect('/kareoke/app/'));
+      return middlewares;
+    },
     proxy: {
       '/kareoke/video': {
         target: process.env.VIDEO_SERVER_URL || 'http://localhost',
         changeOrigin: true,
         secure: false,
       },
-      '/socket.io': {
+      '/kareoke/socket.io': {
         target: process.env.REACT_APP_PROXY_TARGET || 'http://localhost:8080',
         changeOrigin: true,
         secure: false,

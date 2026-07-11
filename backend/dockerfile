@@ -1,6 +1,11 @@
 FROM node:24
 RUN npm i -g nodemon
 RUN npm i -g ts-node-dev
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 ffmpeg \
+    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+    && chmod a+rx /usr/local/bin/yt-dlp \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV DEBUGGER_ARGS=
 WORKDIR /srv/package

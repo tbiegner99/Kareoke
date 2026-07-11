@@ -8,6 +8,10 @@ import { PlaylistService } from './domains/playlists/service';
 import { SongsService } from './domains/songs/service';
 import { PlaylistsController } from './domains/playlists/controller';
 import { SongsController } from './domains/songs/controller';
+import { YoutubeImportDatasource } from './domains/youtube-import/datasource';
+import { YoutubeImportService } from './domains/youtube-import/service';
+import { YoutubeImportController } from './domains/youtube-import/controller';
+import { YtDlpRunner } from './domains/youtube-import/yt-dlp-runner';
 import { logger, createDomainLogger } from './utils/logger';
 import EventEmtter from 'events';
 import { createServer } from 'http';
@@ -75,6 +79,7 @@ const dbClient = DBClientFactory.getClient(dbName);
 // Create domain-specific loggers
 const playlistLogger = createDomainLogger('playlists');
 const songsLogger = createDomainLogger('songs');
+const youtubeImportLogger = createDomainLogger('youtube-import');
 const eventEmitter = new EventEmtter();
 const app = express();
 const server = createServer(app);
@@ -89,9 +94,11 @@ const io = new Server(server, {
 export const datasources = {
     playlistDatasource: new PlaylistDatasource(dbClient, playlistLogger),
     songsDatasource: new SongsDatasource(dbClient, songsLogger),
+    youtubeImportDatasource: new YoutubeImportDatasource(dbClient, youtubeImportLogger),
 };
 
 const songsService = new SongsService(datasources.songsDatasource, songsLogger);
+const ytDlpRunner = new YtDlpRunner(youtubeImportLogger);
 
 export const services = {
     playlistService: new PlaylistService(
@@ -101,6 +108,13 @@ export const services = {
         eventEmitter
     ),
     songsService,
+    youtubeImportService: new YoutubeImportService(
+        datasources.youtubeImportDatasource,
+        ytDlpRunner,
+        songsService,
+        eventEmitter,
+        youtubeImportLogger
+    ),
 };
 
 export const controllers = {
@@ -111,6 +125,11 @@ export const controllers = {
         eventEmitter
     ),
     songsController: new SongsController(services.songsService, songsLogger),
+    youtubeImportController: new YoutubeImportController(
+        services.youtubeImportService,
+        youtubeImportLogger,
+        eventEmitter
+    ),
 };
 
 export const servers = {

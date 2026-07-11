@@ -14,6 +14,7 @@ import Home from './ui/pages/Home/Home';
 import { theme } from './theme';
 import styles from './App.module.css';
 import { SongsListController } from './ui/pages/SongList/SongsListController';
+import YoutubeImport from './ui/pages/YoutubeImport/YoutubeImport';
 import { ToastProvider } from './ui/context/ToastContext';
 
 import { RoomController } from './ui/pages/Room/RoomController';
@@ -47,6 +48,7 @@ const App: React.FC = () => {
               <Routes>
                 <Route path={BASE_URL} element={<AppContainer />}>
                   <Route path={''} element={<Home />} />
+                  <Route path='import' element={<YoutubeImport />} />
                   <Route path='room/:roomId' element={<RoomContainer />}>
                     <Route index element={<RoomController />} />
                     <Route

@@ -13,6 +13,8 @@ import { RoomDatasource } from './domains/room/datasource';
 import { PlaylistDatasource } from './domains/playlist/datasource';
 import { PlaylistService } from './domains/playlist/service';
 import { RoomService } from './domains/room/service';
+import { YoutubeImportDatasource } from './domains/youtubeImport/datasource';
+import { YoutubeImportService } from './domains/youtubeImport/service';
 
 // API Configuration
 const API_BASE_URL = process.env.BASE_URL || '/api/kareoke';
@@ -32,6 +34,7 @@ export const datasources = {
   songs: new SongDatasource(API_BASE_URL),
   room: new RoomDatasource(socket),
   playlist: new PlaylistDatasource(API_BASE_URL),
+  youtubeImport: new YoutubeImportDatasource(socket, API_BASE_URL),
 };
 
 /**
@@ -41,6 +44,7 @@ export const services = {
   songs: new SongService(datasources.songs),
   playlist: new PlaylistService(datasources.playlist),
   rooms: new RoomService(datasources.room), // Room service can be added later if needed
+  youtubeImport: new YoutubeImportService(datasources.youtubeImport),
 };
 
 /**
