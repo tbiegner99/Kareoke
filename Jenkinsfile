@@ -21,13 +21,13 @@ pipeline {
             agent {
                 docker {
                     image 'liquibase/liquibase'
-                    args '--entrypoint= -u 0 --network=kareoke_prod'
+                    args '--entrypoint= -u 0 --network=host'
                     reuseNode true
                 }
             }
             environment {
                 DATABASE_CREDS = credentials('kareoke-db-creds')
-                DATABASE_URL = "postgres_db"
+                DATABASE_URL = "postgres"
                 DATABASE_PORT = "5432"
                 DATABASE_SCHEMA = "kareoke"
             }
