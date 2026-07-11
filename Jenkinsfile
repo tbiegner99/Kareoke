@@ -49,9 +49,6 @@ pipeline {
             }
         }
         stage('Copy Files') {
-            agent {
-                docker "alpine:3"
-            }
             steps {
                 git(
                     credentialsId: "tj-github",
@@ -88,9 +85,6 @@ pipeline {
         stage('Deploy') {
             parallel {
                 stage('Deploy  UI') {
-                    agent {
-                        docker "alpine:3"
-                    }
                     steps {
                         sshCommand(
                             remote: remote,
@@ -100,9 +94,6 @@ pipeline {
                     }
                 }
                 stage('Deploy  Backend') {
-                    agent {
-                        docker "alpine:3"
-                    }
                     steps {
                         sshCommand(
                             remote: remote,
