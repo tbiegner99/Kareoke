@@ -85,29 +85,31 @@ pipeline {
                 
             }
         }
-        parallel {
-            stage('Deploy  UI') {
-                agent {
-                    docker "alpine:3"
+        stage('Deploy') {
+            parallel {
+                stage('Deploy  UI') {
+                    agent {
+                        docker "alpine:3"
+                    }
+                    steps {
+                        sshCommand(
+                            remote: remote,
+                            command: 'cd /mnt/media/vms && docker compose up -d --build kareoke-ui'
+                        )
+                        echo "UI DEPLOY Complete..."
+                    }
                 }
-                steps {
-                    sshCommand(
-                        remote: remote,
-                        command: 'cd /mnt/media/vms && docker compose up -d --build kareoke-ui'
-                    )
-                    echo "UI DEPLOY Complete..."
-                }
-            }
-            stage('Deploy  Backend') {
-                agent {
-                    docker "alpine:3"
-                }
-                steps {
-                    sshCommand(
-                        remote: remote,
-                        command: 'cd /mnt/media/vms && docker compose  up -d --build kareoke'
-                    )
-                    echo "Backend DEPLOY Complete..."
+                stage('Deploy  Backend') {
+                    agent {
+                        docker "alpine:3"
+                    }
+                    steps {
+                        sshCommand(
+                            remote: remote,
+                            command: 'cd /mnt/media/vms && docker compose  up -d --build kareoke'
+                        )
+                        echo "Backend DEPLOY Complete..."
+                    }
                 }
             }
         }
